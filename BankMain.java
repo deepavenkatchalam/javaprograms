@@ -1,40 +1,57 @@
-package com.pack;
+package com.thr;
 class Bank{
-	float rateOfInterest() {
-		return 0;
+	float amount;
+	Bank(){
+		amount=1000;
+	}
+	
+	synchronized void deposit(float damount) {
+		amount=amount+damount;
+		System.out.println("Total Bank after deposit balance="+amount);
+	    notify();
+	}
+	
+	synchronized public void withdraw(float wamount) throws InterruptedException {
+		if(wamount>amount) {
+			System.out.println("Insufficient Balance");
+			System.out.println("Withdraw is not possible");
+			wait();
+		}
+		else {
+			amount=amount-wamount;
+			System.out.println("After withdraw Balance="+amount);
+		}
 	}
 }
-class SBI extends Bank{
-	float rateOfInterest() {
-		return 7.5f;
-	}
-}
-class HDFC extends Bank{
-	float rateOfInterest() {
-		return 8f;
-	}
-}
-class IDBI extends Bank{
-	float rateOfInterest() {
-		return 8.5f;
-	}
-}
-
 
 
 public class BankMain {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		Bank b;
-		b=new SBI();
-		System.out.println("rate of intrest of SBI="+b.rateOfInterest());
-		b=new HDFC();
-		System.out.println("rate of intrest of HDFC="+b.rateOfInterest());
-		b=new IDBI();
-		System.out.println("rate of intrest of IDBI="+b.rateOfInterest());
 		
+				Bank bob=new Bank();
+			Thread t1=new Thread() {
+				public void run() {
+					try {
+						bob.withdraw(2000);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			};
+			t1.start();
+			
+			Thread t2=new Thread() {
+				public void run() {
+					bob.deposit(1000);
+				}
+			};
+			t2.start();
+			}
+
 
 	}
 
-}
+
